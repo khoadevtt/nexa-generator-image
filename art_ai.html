@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa Space - AI Image Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+  /* Primary Brand Colors */
+  --primary: #4f46e5;               /* Indigo 600 */
+  --primary-light: #818cf8;         /* Indigo 400 */
+  --primary-dark: #3730a3;          /* Indigo 800 */
+
+  --secondary: #a855f7;             /* Purple 500 */
+  --accent: #06b6d4;                /* Cyan 500 */
+
+  /* Neutrals */
+  --light: #f9fafb;                 /* Light background */
+  --light-gray: #e5e7eb;            /* Gray 200 */
+  --medium-gray: #9ca3af;           /* Gray 400 */
+  --dark: #111827;                  /* Gray 900 */
+  --darker: #030712;               /* Almost black */
+
+  /* Semantic Colors */
+  --success: #22c55e;               /* Green 500 */
+  --error: #ef4444;                 /* Red 500 */
+  --warning: #facc15;               /* Yellow 400 */
+
+  /* Glass / Frosted UI */
+  --glass: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.2);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-in-out;
+}
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        /* Header - Modern Glass Morphism */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #e0f7fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .creator {
+            font-size: 0.8rem;
+            margin-top: 0.75rem;
+            opacity: 0.7;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .creator a {
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition-fast);
+        }
+
+        .creator a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .generator-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* Prompt Section - Glass Card */
+        .prompt-section {
+            background: var(--glass);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+        }
+
+        .prompt-section:hover {
+            border-color: var(--glass-highlight);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .prompt-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: none;
+            background: var(--glass);
+            color: var(--light);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: none;
+            min-height: 120px;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+        }
+
+        textarea::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        textarea:focus {
+            outline: none;
+            background: var(--glass-highlight);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: var(--primary-light);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0 2.5rem;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            height: 60px;
+            align-self: flex-end;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Controls - Modern Toggle Style */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .style-options {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .style-btn {
+            background: var(--glass);
+            color: var(--light);
+            border: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 999px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .style-btn:hover {
+            background: var(--glass-highlight);
+        }
+
+        .style-btn.active {
+            background: var(--primary);
+            border-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .style-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Result Section - Masonry Grid */
+        .result-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .image-card {
+            background: var(--glass);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--glass-highlight);
+        }
+
+        .image-container {
+            aspect-ratio: 1/1;
+            background: linear-gradient(135deg, rgba(15,23,42,0.5), rgba(2,6,23,0.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generated-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .image-loaded .generated-image {
+            display: block;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .placeholder {
+            width: 60px;
+            height: 60px;
+            opacity: 0.3;
+        }
+
+        .image-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .image-prompt {
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .image-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: var(--glass);
+            color: var(--light);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .action-btn:hover {
+            background: var(--glass-highlight);
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Loading State */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+        }
+
+        .download-btn {
+  background-color: #4f46e5; /* Indigo 600 */
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+}
+
+.download-btn:hover {
+  background-color: #4338ca; /* Indigo 700 */
+  transform: translateY(-2px);
+}
+
+.download-btn:active {
+  transform: scale(0.97);
+}
+
+.download-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+}
+
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error-message {
+            color: var(--error);
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--error);
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.share-btn .icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5);
+}
+
+.share-btn:active {
+  transform: scale(0.98);
+}
+
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Success Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            opacity: 0.8;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            main {
+                padding: 1.25rem;
+            }
+            
+            .prompt-input {
+                flex-direction: column;
+            }
+            
+            .generate-btn {
+                padding: 1rem;
+                width: 100%;
+                height: auto;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .style-options {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                scrollbar-width: thin;
+                scrollbar-color: var(--primary) var(--dark);
+            }
+            
+            .style-options::-webkit-scrollbar {
+                height: 4px;
+            }
+            
+            .style-options::-webkit-scrollbar-track {
+                background: var(--dark);
+            }
+            
+            .style-options::-webkit-scrollbar-thumb {
+                background-color: var(--primary);
+                border-radius: 4px;
+            }
+            
+            .result-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .toast {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                width: auto;
+            }
+        }
+
+        /* iOS Specific Enhancements */
+        @supports (-webkit-touch-callout: none) {
+            textarea, button {
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            .generate-btn {
+                padding: 0 2rem;
+                height: 56px;
+            }
+            
+            .prompt-section {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background: rgba(15, 23, 42, 0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <path d="M3.27 6.96 12 12.01l8.73-5.05"></path>
+                    <path d="M12 22.08V12"></path>
+                </svg>
+            </div>
+            <h1>Nexa Space AI</h1>
+        </div>
+        <p class="tagline">Biến trí tưởng tượng của bạn thành hình ảnh tuyệt đẹp với công nghệ AI tiên tiến</p>
+        <p class="creator">
+            <a href="#" target="_blank">
+                <i class="fas fa-user-astronaut"></i>
+                <span>by Khoa Dev</span>
+            </a>
+        </p>
+    </header>
+
+    <main>
+        <div class="generator-container">
+            <section class="prompt-section">
+                <h2 class="section-title">
+                    <i class="fas fa-magic"></i>
+                    <span>Tạo ảnh với Khoa Space Art</span>
+                </h2>
+                <div class="prompt-input">
+                    <textarea id="promptInput" placeholder="Mô tả hình ảnh bạn muốn tạo... (ví dụ: 'Cảnh quan thành phố tương lai lúc hoàng hôn với những chiếc ô tô bay và đèn neon, theo phong cách cyberpunk')"></textarea>
+                    <button id="generateBtn" class="generate-btn">
+                        <i class="fas fa-bolt"></i>
+                        <span>Tạo ảnh</span>
+                    </button>
+                </div>
+                <div class="controls">
+                    <div class="style-options">
+                        <button class="style-btn active" data-style="default">
+                            <i class="fas fa-star"></i>
+                            <span>Mặc định</span>
+                        </button>
+                        <button class="style-btn" data-style="photorealistic">
+                            <i class="fas fa-camera"></i>
+                            <span>Chân thực</span>
+                        </button>
+                        <button class="style-btn" data-style="3d-render">
+                            <i class="fas fa-cube"></i>
+                            <span>3D</span>
+                        </button>
+                        <button class="style-btn" data-style="watercolor">
+                            <i class="fas fa-paint-brush"></i>
+                            <span>Nghệ thuật</span>
+                        </button>
+                        <button class="style-btn" data-style="cyberpunk">
+                            <i class="fas fa-robot"></i>
+                            <span>Cyberpunk</span>
+                        </button>
+                        <button class="style-btn" data-style="minimalist">
+                            <i class="fas fa-minus"></i>
+                            <span>Tối thiểu</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="errorMessage" class="error-message"></div>
+            </section>
+
+            <section class="result-section" id="resultSection">
+                <!-- Example image card (would be generated dynamically) -->
+                
+            </section>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Ảnh được tạo thành công!</span>
+    </div>
+
+    <footer>
+        <p>© 2025 Nexa Space AI - Khoa Dev 2007</p>
+    </footer>
+
+
+</body>
+</html>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_KEY = "AIzaSyBb8bZNxvau2pUv6aqHDr1hAo2QNpVTPkg";
+            const promptInput = document.getElementById('promptInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const resultSection = document.getElementById('resultSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const styleButtons = document.querySelectorAll('.style-btn');
+            
+            let selectedStyle = "default";
+
+            // Style selection
+            styleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    styleButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedStyle = this.dataset.style;
+                });
+            });
+
+            // Generate image
+            generateBtn.addEventListener('click', generateImage);
+
+            // Allow pressing Enter to generate (Shift+Enter for new line)
+            promptInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    generateImage();
+                }
+            });
+
+
+            async function generateImage() {
+                const prompt = promptInput.value.trim();
+                
+                if (!prompt) {
+                    showError("Please enter a description for the image");
+                    return;
+                }
+                
+                // Clear previous error
+                hideError();
+                
+                // Disable button and show loading
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+                
+                try {
+                    // Create a new image card with loading state
+                    const imageCard = createImageCard(prompt);
+                    resultSection.insertBefore(imageCard, resultSection.firstChild);
+                    
+                    // Modify prompt based on selected style
+                    let fullPrompt = prompt;
+                    if (selectedStyle !== "default") {
+                        fullPrompt = `${prompt}, ${getStylePrompt(selectedStyle)}`;
+                    }
+                    
+                    // Call Gemini API
+                    const imageData = await callGeminiAPI(fullPrompt);
+                    
+                    // Display the generated image
+                    const img = imageCard.querySelector('.generated-image');
+                    img.src = `data:image/png;base64,${imageData}`;
+                    img.style.display = 'block';
+                    imageCard.querySelector('.placeholder').style.display = 'none';
+                    imageCard.querySelector('.loading').style.display = 'none';
+                    
+                    // Enable download
+                    const downloadBtn = imageCard.querySelector('.download-btn');
+                    downloadBtn.addEventListener('click', () => {
+                        downloadImage(imageData, `nexa-space-${Date.now()}.png`);
+                    });
+                    
+                    // Clear input
+                    promptInput.value = '';
+                } catch (error) {
+                    console.error("Error generating image:", error);
+                    showError("Failed to generate image. Please try again.");
+                    // Remove the failed card if it exists
+                    if (resultSection.firstChild) {
+                        resultSection.removeChild(resultSection.firstChild);
+                    }
+                } finally {
+                    // Re-enable button
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<span>Generate</span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
+                }
+            }
+            
+            function createImageCard(prompt) {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.innerHTML = `
+                    <div class="image-container">
+                        <img class="generated-image" alt="Generated image" style="display: none;">
+                        <svg class="placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <div class="image-info">
+                        <p class="image-prompt" title="${prompt}">${prompt}</p>
+                        <div class="image-actions">
+                            <button class="download-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download
+                            </button>
+                            <button class="share-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return card;
+            }
+            
+            async function callGeminiAPI(prompt) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${API_KEY}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                {text: prompt}
+                            ]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["TEXT", "IMAGE"]
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // Find the image part in the response
+                for (const candidate of data.candidates) {
+                    for (const part of candidate.content.parts) {
+                        if (part.inlineData) {
+                            return part.inlineData.data;
+                        }
+                    }
+                }
+                
+                throw new Error('No image data found in response');
+            }
+            
+            function downloadImage(imageData, filename) {
+                const link = document.createElement('a');
+                link.href = `data:image/png;base64,${imageData}`;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+            
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+            
+            function getStylePrompt(style) {
+                const stylePrompts = {
+                    "photorealistic": "highly detailed photorealistic style, 8K resolution, realistic lighting and textures",
+                    "3d-render": "3D rendered style, Blender rendering, smooth lighting, cinematic composition",
+                    "watercolor": "watercolor painting style, soft edges, visible brush strokes, artistic composition",
+                    "cyberpunk": "cyberpunk style, neon lights, futuristic cityscape, rain effects, cinematic lighting",
+                    "minimalist": "minimalist style, clean lines, simple shapes, limited color palette, negative space"
+                };
+                return stylePrompts[style] || "";
+            }
+        });
+    </script>
+</body>
+</html>
