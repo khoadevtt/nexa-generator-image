@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Giá Nesa - Gói Dịch Vụ Cao Cấp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8A63FF;
+            --primary-dark: #6A4BDB;
+            --secondary: #00E0C6;
+            --dark: #0F0F15;
+            --darker: #07070C;
+            --light: #F5F5FF;
+            --gray: #A0A0B0;
+            --success: #00D1A9;
+            --error: #FF4D79;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(138, 99, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 224, 198, 0.1) 0%, transparent 20%);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 800px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 380px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138, 99, 255, 0.1), rgba(0, 224, 198, 0.05));
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .pricing-card:hover::before {
+            opacity: 1;
+        }
+
+        .pricing-card.pro {
+            border-color: var(--primary);
+        }
+
+        .pricing-card.unlimited {
+            border-color: var(--secondary);
+        }
+
+        .pricing-card.pro .plan-name {
+            color: var(--primary);
+        }
+
+        .pricing-card.unlimited .plan-name {
+            color: var(--secondary);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-name i {
+            font-size: 1.8rem;
+        }
+
+        .plan-description {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray);
+            margin-top: 0.5rem;
+            margin-left: 0.25rem;
+        }
+
+        .features {
+            margin-bottom: 2.5rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature i {
+            color: var(--success);
+            margin-top: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(138, 99, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, var(--secondary), #00BFA5);
+            color: var(--darker);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 224, 198, 0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .unlimited .popular-badge {
+            background: var(--secondary);
+            color: var(--darker);
+        }
+
+        @media (max-width: 768px) {
+            .pricing-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .pricing-card {
+                max-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .highlight-card {
+            transform: scale(1.05);
+        }
+
+        .highlight-card:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nâng Cấp Trải Nghiệm <br> Nexa AI</h1>
+        <p>Chọn gói dịch vụ phù hợp với nhu cầu của bạn và khám phá sức mạnh thực sự của Nesa AI</p>
+    </div>
+
+    <div class="pricing-container">
+        <div class="pricing-card pro floating">
+            <div class="plan-name">
+                <i class="fas fa-bolt"></i>
+                Nesa Super
+            </div>
+            <p class="plan-description">Nhanh hơn; mạnh hơn; tiện lợi hơn; xử lý nhiều thông tin hơn</p>
+            <div class="price">
+                18$<span>/tháng</span>
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Hỗ trợ API mạnh mẽ</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">60 tín chỉ API mỗi ngày</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Tạo 25 ảnh mỗi ngày</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Tốc độ xử lý ưu tiên</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Hỗ trợ 24/7</div>
+                </div>
+            </div>
+            <button class="btn btn-primary">
+                <i class="fas fa-rocket"></i> Nâng cấp ngay
+            </button>
+        </div>
+
+        <div class="pricing-card unlimited floating highlight-card">
+            <div class="popular-badge">PHỔ BIẾN</div>
+            <div class="plan-name">
+                <i class="fas fa-infinity"></i>
+                Nesa Unlimited
+            </div>
+            <p class="plan-description">Nhanh nhất; mạnh nhất; xử lý nhanh, tốc độ cao nhất với trải nghiệm không giới hạn</p>
+            <div class="price">
+                30$<span>/tháng</span>
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Hỗ trợ API không giới hạn</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">120 tín chỉ API mỗi ngày</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Tạo 50 ảnh mỗi ngày</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Tốc độ xử lý cao nhất</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Truy cập tính năng cao cấp</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Hỗ trợ ưu tiên 24/7</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="feature-text">Tích hợp công cụ chuyên sâu</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary">
+                <i class="fas fa-crown"></i> Đăng ký ngay
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Thêm hiệu ứng khi di chuột vào card
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('hover-effect');
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('hover-effect');
+            });
+        });
+
+        // Animation cho các card
+        const cards = document.querySelectorAll('.pricing-card');
+        cards.forEach((card, index) => {
+            // Thêm delay khác nhau cho mỗi card
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // Hiệu ứng khi click vào nút
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fa-solid fa-xmark"></i> Bạn chưa có Visa thanh toán';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
