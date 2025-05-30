@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa Space AI</title>
+    <style>
+        :root {
+            --primary: #8A63FF;
+            --primary-dark: #6A4BDB;
+            --secondary: #00E0C6;
+            --dark: #0F0F15;
+            --darker: #07070C;
+            --light: #F5F5FF;
+            --gray: #A0A0B0;
+            --success: #00D1A9;
+            --error: #FF4D79;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(138, 99, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 224, 198, 0.15) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .logo-text {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+            line-height: 1.1;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-text::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: expandLine 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.5s forwards;
+        }
+
+        .logo-subtext {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: var(--gray);
+            font-weight: 450;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1s forwards;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .ai-badge {
+            position: absolute;
+            top: -20px;
+            right: -40px;
+            background-color: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(15deg);
+            opacity: 0;
+            animation: badgePop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s forwards;
+        }
+
+        .free-banner {
+            background-color: var(--success);
+            color: var(--darker);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 30px;
+            box-shadow: 0 8px 24px rgba(0, 209, 169, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s forwards;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .free-banner svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            opacity: 0.3;
+            filter: blur(1px);
+        }
+
+        @keyframes expandLine {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes badgePop {
+            0% { opacity: 0; transform: scale(0) rotate(15deg); }
+            70% { transform: scale(1.1) rotate(15deg); }
+            100% { opacity: 1; transform: scale(1) rotate(15deg); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .logo-text {
+                font-size: 3rem;
+            }
+            
+            .ai-badge {
+                top: -15px;
+                right: -20px;
+                font-size: 0.7rem;
+            }
+            
+            .free-banner {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* iOS specific optimizations */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                -webkit-font-smoothing: antialiased;
+            }
+            
+            .logo-text {
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+            }
+            
+            .particle {
+                -webkit-backdrop-filter: blur(1px);
+                backdrop-filter: blur(1px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1 class="logo-text">Nexa Space</h1>
+            <div class="ai-badge">AI</div>
+            <p class="logo-subtext">Được lập trình từ Khoa Dev - AI Việt, sáng tạo Việt</p>
+        </div>
+        
+        <div class="free-banner">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Nexa đang được miễn phí, bạn chưa cần thanh toán
+        </div>
+        
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create particles
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = window.innerWidth < 768 ? 30 : 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size between 2px and 8px
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite alternate`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add floating animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+                    50% { transform: translate(${Math.random() > 0.5 ? '-' : ''}${Math.random() * 50 + 20}px, ${Math.random() * 50 + 20}px) rotate(${Math.random() * 360}deg); opacity: ${Math.random() * 0.3 + 0.2}; }
+                    100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // iOS 18+ specific optimizations
+            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                document.body.classList.add('ios');
+                
+                // Check for iOS version
+                const iosVersionMatch = navigator.userAgent.match(/OS (\d+)_(\d+)_?(\d+)?/);
+                if (iosVersionMatch && parseInt(iosVersionMatch[1]) >= 18) {
+                    document.body.classList.add('ios-18-plus');
+                    
+                    // Enhanced animations for iOS 18+
+                    document.querySelectorAll('.particle').forEach(particle => {
+                        particle.style.filter = 'blur(2px)';
+                        particle.style.opacity = '0.4';
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
