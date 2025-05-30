@@ -44,6 +44,47 @@
                 radial-gradient(circle at 90% 80%, rgba(0, 224, 198, 0.1) 0%, transparent 20%);
         }
 
+        /* Popup modal style */
+.modal {
+    display: none; /* ẩn mặc định */
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2rem 3rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    color: var(--light);
+    font-size: 1.2rem;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(15px);
+}
+
+.modal-buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-buttons .btn {
+    width: 120px;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+
         .header {
             text-align: center;
             margin-bottom: 3rem;
@@ -74,6 +115,12 @@
             width: 100%;
             max-width: 1200px;
         }
+
+        .modal {
+  display: none; /* ẩn mặc định */
+  /* các style khác */
+}
+
 
         .pricing-card {
             background: var(--card-bg);
@@ -282,16 +329,16 @@
         <div class="pricing-card pro floating">
             <div class="plan-name">
                 <i class="fas fa-bolt"></i>
-                Nesa Super
+                Nesa Trải Nghiệm
             </div>
             <p class="plan-description">Nhanh hơn; mạnh hơn; tiện lợi hơn; xử lý nhiều thông tin hơn</p>
             <div class="price">
-                18$<span>/tháng</span>
+                3$<span>/tháng</span>
             </div>
             <div class="features">
                 <div class="feature">
                     <i class="fas fa-check-circle"></i>
-                    <div class="feature-text">Hỗ trợ API mạnh mẽ</div>
+                    <div class="feature-text">Hỗ trợ 15 API mạnh mẽ</div>
                 </div>
                 <div class="feature">
                     <i class="fas fa-check-circle"></i>
@@ -310,9 +357,9 @@
                     <div class="feature-text">Hỗ trợ 24/7</div>
                 </div>
             </div>
-            <button class="btn btn-primary">
-                <i class="fas fa-rocket"></i> Nâng cấp ngay
-            </button>
+           <button class="btn btn-primary btn-upgrade">
+    <i class="fas fa-rocket"></i> Trải nghiệm ngay
+</button>
         </div>
 
         <div class="pricing-card unlimited floating highlight-card">
@@ -323,7 +370,7 @@
             </div>
             <p class="plan-description">Nhanh nhất; mạnh nhất; xử lý nhanh, tốc độ cao nhất với trải nghiệm không giới hạn</p>
             <div class="price">
-                30$<span>/tháng</span>
+                17$<span>/tháng</span>
             </div>
             <div class="features">
                 <div class="feature">
@@ -355,40 +402,65 @@
                     <div class="feature-text">Tích hợp công cụ chuyên sâu</div>
                 </div>
             </div>
-            <button class="btn btn-secondary">
-                <i class="fas fa-crown"></i> Đăng ký ngay
-            </button>
+            <button class="btn btn-primary btn-upgrade">
+  <i class="fas fa-rocket"></i> Nâng cấp Nexa Unlimited
+</button>
+
+
         </div>
     </div>
 
     <script>
-        // Thêm hiệu ứng khi di chuột vào card
-        document.querySelectorAll('.pricing-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('hover-effect');
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('hover-effect');
-            });
-        });
+document.addEventListener('DOMContentLoaded', () => {
+  // Hiệu ứng hover card
+  document.querySelectorAll('.pricing-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.classList.add('hover-effect');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.classList.remove('hover-effect');
+    });
+  });
 
-        // Animation cho các card
-        const cards = document.querySelectorAll('.pricing-card');
-        cards.forEach((card, index) => {
-            // Thêm delay khác nhau cho mỗi card
-            card.style.animationDelay = `${index * 0.1}s`;
-        });
+  // Animation delay cho các card
+  const cards = document.querySelectorAll('.pricing-card');
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+  });
 
-        // Hiệu ứng khi click vào nút
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-                setTimeout(() => {
-                    this.innerHTML = '<i class="fa-solid fa-xmark"></i> Bạn chưa có Visa thanh toán';
-                }, 1500);
-            });
-        });
+  // Lấy modal và các nút
+  const modal = document.getElementById('payment-modal');
+  const confirmBtn = document.getElementById('confirm-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
+
+  // Đóng modal khi nhấn nút Đóng
+  cancelBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // Chuyển trang khi nhấn nút Đồng ý
+  confirmBtn.addEventListener('click', () => {
+    window.location.href = 'https://www.facebook.com/khoa.high.tech.dev';
+  });
+
+  // Chỉ bật popup khi click nút Nâng cấp ngay (có class .btn-upgrade)
+  document.querySelectorAll('.btn-upgrade').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+  });
+});
     </script>
+    <!-- Popup Modal -->
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <p>Bạn sẽ chuyển trang đến Admin để thanh toán?</p>
+    <div class="modal-buttons">
+      <button id="confirm-btn" class="btn btn-primary">Đồng ý</button>
+      <button id="cancel-btn" class="btn btn-secondary">Đóng</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
